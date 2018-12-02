@@ -47,11 +47,10 @@ axios({
             console.log(errorMessage);
             callback(errorMessage);
         });
-        callback(reqs);
+    callback();
     },(err) => {
-        if (err) {
-            console.log(err);
-        }
+        console.log('finished with all callbacks');
+        console.log(reqs);
     });
 }).catch((errorMessage) => {
     console.log(errorMessage);
