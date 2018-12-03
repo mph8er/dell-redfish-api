@@ -1,10 +1,14 @@
+require('promise.prototype.finally').shim();
+
 const axios = require('axios'),
     https = require('https'),
     async = require('async');
 
-let omeIp = "100.73.32.21",
+// Persistant variables
+const omeIp = "100.73.32.21",
     omeUser = "admin",
     omePass = "Sq%9A&pEBP"
+
 axios({
     method: 'get',
     url: `https://${omeIp}/redfish/v1/Systems/Members`,
@@ -20,16 +24,13 @@ axios({
     let sysCount = res.data['@odata.count'],
         x = 0,
         value = res.data['value'],
-        members = [],
-        reqs = [];
-    console.log('System count is ', sysCount);
-    while (x < sysCount) {
-        member = value[x]['@odata.id'];
-        members.push(member);
-        x++;
-    };
-    async.each(members,(member,callback) => {
-        console.log('Working on ', member);
+        reqs = [],
+        finished = 0;
+
+    console.log('System count is ', sysCount);    
+    for(var key in  value){
+        let member =  value[key]['@odata.id'];
+        console.log('Kicking off ', member);
         axios({
             method: 'get',
             url: `https://${omeIp}/${member}`,
@@ -46,15 +47,28 @@ axios({
         }).catch((errorMessage) => {
             console.log(errorMessage);
             callback(errorMessage);
+        }).finally( () => {            
+            finished++;
+            if(finished == sysCount){
+                console.log("All callbacks completed!");
+                console.log(reqs);
+            }
         });
-    callback();
-    },(err) => {
-        console.log('finished with all callbacks');
+    }
+    /*
+    while (finished < sysCount) {
+        // console.log("Finished: ",finished," Of: ",sysCount);
+        // Wait, do nothing!
+    };
+    console.log('finished with all callbacks');
         console.log(reqs);
-    });
+    */
+
 }).catch((errorMessage) => {
     console.log(errorMessage);
 });
+
+
 // url = "https://"+ome_ip+"/redfish/v1/"
 // api = "https://"+ome_ip+"/api/DeviceService/"
 
