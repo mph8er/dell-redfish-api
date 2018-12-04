@@ -1,3 +1,7 @@
-const test = require('./functions.js');
+const {getMembers} = require('./functions.js');
 
-test.getMembers().then((res) => console.log(res));
+var omeIp = "100.73.32.21",
+omeUser = "admin",
+omePass = "Sq%9A&pEBP";
+
+getMembers(omeIp,omeUser,omePass).then((res) => console.log(res));

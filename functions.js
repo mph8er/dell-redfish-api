@@ -1,15 +1,10 @@
 // require('promise.prototype.finally').shim();
 
 const axios = require('axios'),
-    https = require('https'),
-    omeIp = "100.73.32.21",
-    omeUser = "admin",
-    omePass = "Sq%9A&pEBP";
+    https = require('https');
 
-async function getMembers(omeIp,omeUser,omePass) {
-    var reqs = [];
-    return new Promise((res,err) => { 
-        axios({
+    function getMembers(omeIp, omeUser, omePass) {
+        return axios({
             method: 'get',
             url: `https://${omeIp}/redfish/v1/Systems/Members`,
             auth: {
@@ -19,25 +14,22 @@ async function getMembers(omeIp,omeUser,omePass) {
             httpsAgent: new https.Agent({
                 rejectUnauthorized: false
             }),
-            headers: {'Self-Signed-Header': 'certificate'}
+            headers: {
+                'Self-Signed-Header': 'certificate'
+            }
         }).then((res) => {
+            var reqs = [];
             value = res.data['value'];
-            for(var key in value) {
-                let member =  value[key]['@odata.id'];
+            for (var key in value) {
+                let member = value[key]['@odata.id'];
                 reqs.push(member);
             }
-            resolve(reqs);
+          return reqs;
         }).catch((err) => {
-            console.log(err);
-        });        
-    });
-};
-
-async function getMemberDetails(asdf) {
-
-};
+          console.log(err);
+        });
+      };
 
 module.exports = {
     getMembers,
-    getMemberDetails
 };
