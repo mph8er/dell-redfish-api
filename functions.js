@@ -8,26 +8,28 @@ const axios = require('axios'),
 
 async function getMembers(omeIp,omeUser,omePass) {
     var reqs = [];
-    await axios({
-        method: 'get',
-        url: `https://${omeIp}/redfish/v1/Systems/Members`,
-        auth: {
-            username: omeUser,
-            password: omePass
-        },
-        httpsAgent: new https.Agent({
-            rejectUnauthorized: false
-        }),
-        headers: {'Self-Signed-Header': 'certificate'}
-    }).then((res) => {
-        value = res.data['value'];
-        for(var key in value) {
-            let member =  value[key]['@odata.id'];
-            reqs.push(member);
-        }
-        return new Promise(() => console.log(reqs));
-    }).catch((err) => {
-        console.log(err);
+    return new Promise((res,err) => { 
+        axios({
+            method: 'get',
+            url: `https://${omeIp}/redfish/v1/Systems/Members`,
+            auth: {
+                username: omeUser,
+                password: omePass
+            },
+            httpsAgent: new https.Agent({
+                rejectUnauthorized: false
+            }),
+            headers: {'Self-Signed-Header': 'certificate'}
+        }).then((res) => {
+            value = res.data['value'];
+            for(var key in value) {
+                let member =  value[key]['@odata.id'];
+                reqs.push(member);
+            }
+            resolve(reqs);
+        }).catch((err) => {
+            console.log(err);
+        });        
     });
 };
 
